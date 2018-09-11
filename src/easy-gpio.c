@@ -63,9 +63,9 @@ void read_all_gpio(){
 int main(int argc, char **argv){
 	if (argc==1){
 help:
+		printf("This is free software with ABSOLUTELY NO WARRANTY.\n\n");
 		printf("Help:\n\tname\t\t\t\t\t\tVersion");
 		printf("\n\t%s\t\t\t\t\tV3.0\n\n", argv[0]);
-		printf("This is free software with ABSOLUTELY NO WARRANTY.");
 		printf("Command:\n"
 			"\t-i pin in/out		initialized pin\n"
 			"\t-r | -ra		read value and direction for each gpio\n "
