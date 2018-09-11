@@ -1,5 +1,4 @@
 #include"../inc/function-gpio.h"
-
 #include<dirent.h>	//read_directory_ad
 
 
