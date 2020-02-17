@@ -20,3 +20,6 @@ sudo cp service/daemon-easy-gpio.service /etc/systemd/system/daemon-easy-gpio.se
 echo "enable & start service"
 sudo systemctl enable daemon-easy-gpio.service
 sudo systemctl start daemon-easy-gpio.service
+
+echo "finish, if you see green text all is ok"
+sudo systemctl status daemon-easy-gpio.service
