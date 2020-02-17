@@ -1,0 +1,6 @@
+Download from github like zip
+ $ cd Downloads
+ $ unzip easy-gpio-master.zip
+ $ cd easy-gpio-master/newVersion/
+ $ chmod +x install.sh
+ $ ./install.sh
