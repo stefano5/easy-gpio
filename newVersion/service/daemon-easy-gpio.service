@@ -1,11 +1,11 @@
 [Unit]
-Description=/usr/bin/daemon-easy-gpio Compatibility
-ConditionPathExists=/usr/bin/daemon-easy-gpio
-Wants=network.target network.online.target
+Description=/usr/bin/daemon-easy-gpio.sh Compatibility
+ConditionPathExists=/usr/bin/daemon-easy-gpio.sh 
+#Wants=network.target network.online.target
 
 [Service]
 Type=forking
-ExecStart=/usr/bin/daemon-easy-gpio
+ExecStart=/usr/bin/daemon-easy-gpio.sh 
 TimeoutSec=0
 
 [Install]
