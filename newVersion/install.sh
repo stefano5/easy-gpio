@@ -17,6 +17,6 @@ sudo chmod +x service/daemon-easy-gpio.sh
 sudo cp service/daemon-easy-gpio.sh /usr/bin/daemon-easy-gpio.sh
 sudo cp service/daemon-easy-gpio.service /etc/systemd/system/daemon-easy-gpio.service
 
-echo "enable & start"
+echo "enable & start service"
 sudo systemctl enable daemon-easy-gpio.service
 sudo systemctl start daemon-easy-gpio.service
