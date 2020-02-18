@@ -44,11 +44,10 @@ void turn_off_all_gpio_pwm() {
 }
 
 void turn_off_gpio_pwm(int pin_pwm) {
-    PRINT_IF_DEBUG_ON("spengo pwm pin: %d\n", pin_pwm + 2);
+    PRINT_IF_DEBUG_ON("Turn off pwm pin: %d\n", pin_pwm + 2);
     if (gpio_pwm[pin_pwm].state == 1) {
-        PRINT_IF_DEBUG_ON("    ^= era in esecuzione un thread che adesso e' stato arrestato\n");
+        PRINT_IF_DEBUG_ON("    ^= that thread was in execution, now it has been killed\n");
         pthread_cancel(gpio_pwm[pin_pwm].pinTid);
-        //write_pin(pin_pwm + 2, 0); may be is done ?
     }
 
 }
@@ -58,10 +57,10 @@ void *routine_new_thread(void* param) {
     float dutyCycle = arg_pwm->dutyCycle;
     int pin = arg_pwm->pin;
     free(arg_pwm);
-    PRINT_IF_DEBUG_ON("Routine thread: f=%.2f, pin=%d\n", dutyCycle, pin);
+    PRINT_IF_DEBUG_ON("Routine thread, it received: f=%.2f, pin=%d\n", dutyCycle, pin);
     
     f_pwm_gpio(dutyCycle, pin); //this function blocks the execution
-    PRINT_IF_DEBUG_ON("f_pwm_gpio conclusa\n");
+    PRINT_IF_DEBUG_ON("f_pwm_gpio finished\n");
     pthread_exit(NULL);
 }
 
@@ -78,38 +77,38 @@ void create_pwm(float f, int pin) {
     turn_off_gpio_pwm(pin - 2);
 
     if (isNull(pin)) {
-        PRINT_IF_DEBUG_ON("\t[create_pwm]Il pin  risultava inutilizzato. Ora e' partito\n");
+        PRINT_IF_DEBUG_ON("\t[create_pwm]Pin %d was not used. Now it's used\n", pin);
         if (f == 0.0) {
-            PRINT_IF_DEBUG_ON("scrivo 0 al pin %d\n\n", pin);
+            PRINT_IF_DEBUG_ON("     write 0 on pin %d\n\n", pin);
             gpio_pwm[pin - 2].state = 0;
             write_pin(pin, 0);
         } else if (f == 1.0) {
-            PRINT_IF_DEBUG_ON("scrivo 1 al pin %d\n\n", pin);
+            PRINT_IF_DEBUG_ON("     write 1 on pin %d\n\n", pin);
             gpio_pwm[pin - 2].state = 1;
             write_pin(pin, 1);
         } else {
-            PRINT_IF_DEBUG_ON("generazione pwm\n");
+            PRINT_IF_DEBUG_ON("generete pwm\n");
             gpio_pwm[pin - 2].state = 1;
             pthread_create(&gpio_pwm[pin - 2].pinTid, NULL, routine_new_thread, (void*)arg_pwm);
             gpio_pwm[pin - 2].oldF = f;
         }
     } else {
-        PRINT_IF_DEBUG_ON("\t[create_pwm]Il pin era utilizzato, verra' fermato e verra' generata una nuova pwm\n");
+        PRINT_IF_DEBUG_ON("\t[create_pwm]Pin %d was used, will be stopped then will be generated new pwm (or simple assignment)\n", pin);
         if (f == 0.0) {
-            PRINT_IF_DEBUG_ON("scrivo 0 al pin %d\n\n", pin);
-            printf_d("\t\t[create_pwm]Hai passato una frequenza nulla, il thread precedente e' stato bloccato e il pin spento\n");
+            PRINT_IF_DEBUG_ON("     write 0 on pin %d\n\n", pin);
+            PRINT_IF_DEBUG_ON("\t\t[create_pwm]You give me a zero frequency then the older thread had been killed and the pin %d was turn off. (duty cycle 0%%)\n", pin);
             gpio_pwm[pin - 2].state = 0;
             gpio_pwm[pin - 2].oldF = f;
             write_pin(pin, 0);
         } else if (f == 1.0) {
-            PRINT_IF_DEBUG_ON("scrivo 1 al pin %d\n\n", pin);
-            printf_d("\t\t[create_pwm]Hai passato una frequenza unitaria, il thread precedente e' stato bloccato e il pin acceso\n");
+            PRINT_IF_DEBUG_ON("     write 1 on pin %d\n\n", pin);
+            PRINT_IF_DEBUG_ON("\t\t[create_pwm]You give me a unitary frequency then the older thread had been killed and the pin %d was turn on (duty cycle 100%%)\n", pin);
             gpio_pwm[pin - 2].state = 1;
             gpio_pwm[pin - 2].oldF = f;
             write_pin(pin, 1);
         } else {
             if (gpio_pwm[pin - 2].oldF != f) {
-                printf_d("\t\t[create_pwm]hai passato una frequenza != 0, il thread precendete e' stato bloccato ed e' stato creato un nuovo thread\n");
+                PRINT_IF_DEBUG_ON("\t\t[create_pwm]you give me a certaint frequency != 0 and != 'old duty cycle' then the older thread was killed and was launched new thread (duty cycle %f)\n", f);
                 pthread_create(&gpio_pwm[pin - 2].pinTid, NULL, routine_new_thread, (void*)arg_pwm);
                 gpio_pwm[pin-2].state = 1;
                 gpio_pwm[pin-2].oldF = f;
@@ -128,7 +127,7 @@ void try_and_solve_directory() {
     if (stat(directory, &st) == -1) {
         int res=mkdir(directory, 0700);
         if (res == -1) {
-            printf("The directory [%s] is lost. Please run the \"install.sh\" to use this software\n", directory);
+            printf("The directory [%s] was lost. Please run the \"install.sh\" to use this software\n", directory);
             exit(EXIT_FAILURE);
         }
         printf("[Warning] The directory [%s] was lost, now it has been successfully recreated\n", directory);
@@ -164,8 +163,7 @@ int main(int argc, char**argv) {
         try_and_solve_directory();
 
         msgrcv(msgid, (void*)&messageFromQueue, sizeof(struct MessageData) - sizeof(long int), 0, 0);
-        if (enable_print)
-            printf("%s Ho ricevuto il pin=%d, valore=%.2f\n", argv[0], (int)messageFromQueue.pin, (float)messageFromQueue.value);   //translate me  //TODO
+        PRINT_IF_DEBUG_ON("%s I received pin=%d, value=%.2f\n", argv[0], (int)messageFromQueue.pin, (float)messageFromQueue.value);
 
         create_pwm((float)messageFromQueue.value, (int)messageFromQueue.pin);
     }

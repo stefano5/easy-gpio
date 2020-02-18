@@ -5,20 +5,23 @@ bool enable_print;
 
 void print_syntax() {
     printf("name sw: %s\n", name_exe);
-    printf("sintax: TODO\n");   //TODO
+    printf("This software receve command from message queue from easy-gpio software\n");
+    printf("Don't use you this software, must be systemd to use that\n");
+    printf("Please follow the guide\n");
+    printf("Else, if you would improve this code you can use '-p' parameter in order to enable all debug print\n");
     exit(EXIT_SUCCESS);
 }
 
-
-
+//unused
 void managementCommand(int i) {
 	if (!strcasecmp(command[i], "-h") || !strcasecmp(command[i], "--help")) {
         print_syntax();
 	} else if (!strcasecmp(command[i], "-p") || !strcasecmp(command[i], "--enable-print")) {
-        enable_print = TRUE;
+        debug_on();
 	}
 }
 
+//unused
 void managementParam(int i) {
 	if (!strcasecmp(param[i], "param") || !strcasecmp(param[i], "parameter")) {
         
