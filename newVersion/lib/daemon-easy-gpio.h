@@ -6,14 +6,14 @@
 #include <pthread.h>
 
 #define KEY_MESSAGE_QUEUE 1234
-#define VERSION "V5.0_STABLE"
+#define VERSION "V3.1_TEST"
 
 #define CLOSE 1
 
 int action;
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------
-//The follow structure and function are needed to use a message queue to let the comunication with dameon-easey-gpio
+//The following structure and function are needed to use a message queue to let the comunication with dameon-easey-gpio
 
 struct MessageData {
     long int type;
@@ -35,10 +35,10 @@ void send_message/*at daemon-easy-gpio ONLY*/(int pin, float f){
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------
-//The follow function are usable to control, thoughtless the gpio
+//The followng function are usable to control, thoughtless the gpio
 
 /*
- * If you wan't switch the value using the daemon-easy-gpio
+ * If you want switch the value using the daemon-easy-gpio
  * Eg:  toggles_pin(6);
  * 
  */
