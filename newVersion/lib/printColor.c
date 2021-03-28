@@ -34,6 +34,8 @@
 #define BEGIN_PRINT_GREEN   setColor(PRINT_GREEN); printf(
 #define BEGIN_PRINT_BLUE    setColor(PRINT_BLUE); printf(
 #define END_PRINT           ); resetColor();
+#define END_PRINT_LN        ); resetColor(); printf("\n");
+
 
 
 void setColor(int fg) {

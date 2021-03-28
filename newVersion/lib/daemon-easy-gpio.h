@@ -16,12 +16,12 @@ int action;
 //The following structure and function are needed to use a message queue to let the comunication with dameon-easey-gpio
 
 struct MessageData {
-    long int type;
+    long int type;  //it's mandatory for message queue communication
     int pin;
     float value;
 };
 
-void send_message/*at daemon-easy-gpio ONLY*/(int pin, float f){
+void send_message/*at daemon-easy-gpio ONLY*/(int pin, float f) {
     key_t key = (key_t)KEY_MESSAGE_QUEUE;
     int msgid = msgget(key, 0666 | IPC_CREAT);
 
@@ -29,8 +29,8 @@ void send_message/*at daemon-easy-gpio ONLY*/(int pin, float f){
 
     struct MessageData my_data;
     my_data.type = 1;
-    my_data.pin=pin;
-    my_data.value=f;
+    my_data.pin = pin;
+    my_data.value = f;
     msgsnd(msgid, (void *)&my_data, sizeof(struct MessageData) - sizeof(long int), 0);
 }
 
@@ -42,9 +42,9 @@ void send_message/*at daemon-easy-gpio ONLY*/(int pin, float f){
  * Eg:  toggles_pin(6);
  * 
  */
-int toggles_pin_msg(int pin){
-    if (pinIsInitialized(pin)){
-        if (read_pin(pin)==0){
+int toggles_pin_msg(int pin) {
+    if (pinIsInitialized(pin)) {
+        if (read_pin(pin) == 0) {
             send_message(pin, 1.0);
             f_print_value_gpio(pin);
             return 0;

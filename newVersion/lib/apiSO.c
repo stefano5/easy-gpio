@@ -1,6 +1,7 @@
 #ifndef __APISO
 #define __APISO
 
+//Standard library
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <dirent.h>
@@ -8,13 +9,19 @@
 #include    <unistd.h>
 #include    <errno.h>
 #include    <stdint.h>
+#include    <sys/types.h>
+#include    <sys/stat.h>
+#include    <unistd.h>
 
-#define     TRUE      1
-#define     FALSE     0
+#define     TRUE            1
+#define     FALSE           0
+#define     NO_ROOT_GUI     TRUE
 
+//Private library
 #include    <management_date.c>
 #include    <printColor.c>
 #include    <debug.c>
+#include    <coloredMessage.c>
 
 
 void msleep(int ms) {
@@ -22,7 +29,8 @@ void msleep(int ms) {
 }
 
 /* 
- * If 'force == TRUE', if you run within sudo this function return uid 1000 by default
+ * If 'disableRoot == TRUE' if you run within sudo this function return uid 1000 by default
+ * you can use NO_ROOT_GUI
  * */
 char user[32];
 int getUserId(char *user, int disableRoot) {
@@ -125,6 +133,11 @@ int existDirectory(char *file) {
         return FALSE;
     }
 }
+
+int makeDirectory(char *dir) {
+   mkdir(dir, 0766);
+} 
+
 #define SIZE_NAME_FILE  256
 #define NUMBER_FILE     256
 
@@ -241,10 +254,11 @@ int existFile(char *file) {
 int getLevelBattery(){
     char output[64];
     FILE *f;
+    int correction=1;
 init_func:
     system("acpitool -b > /home/stefano/.battery.txt");
 
-    usleep(10000);
+    usleep(10000 * correction);
     initArray_str(output, 64);
     f = fopen("/home/stefano/.battery.txt", "r");
     if (f == NULL) {
@@ -252,15 +266,17 @@ init_func:
         setColor(PRINT_RED);
         printf("Error 11. File '.battery.txt' not found. Why?\n"); 
         resetColor();
-        sleep(1); 
+        sleep(1);
+        correction +=1;
         goto init_func;
     } //Permessi o acpitool non esistente
+    correction = 1;
     fgets(output, 64, f);
     fclose(f);
     removeFile("/home/stefano/.battery.txt");
     trim(output);
     int offset;
-    int level;
+    int level=0;
     int oldLevel=50;	//a caso
     for (int i=0; i<64; i++){
         if (output[i] == 58){

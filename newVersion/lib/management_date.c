@@ -21,6 +21,16 @@ char* getHours() {
     return hours;
 }
 
+/*
+ *     time_t rawtime;
+    struct tm * timeinfo;
+
+    time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
+
+    sprintf(output, "[%d %d %d %d:%d:%d]",timeinfo->tm_mday, timeinfo->tm_mon + 1, timeinfo->tm_year + 1900, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+*/
+
 int* calculatesDifference(char *hourStart, char *hourEnd) {
     if (strlen(hourStart)<5 || strlen(hourEnd)<5){
         printf("[%s->calculatesDifference] il parametro passato deve avere lunghezza fissa di 6 caratteri. Adesso avrai una violazione in memoria\n", __FILE__);
@@ -78,7 +88,7 @@ reCompute:
         }
     } else {
         if (mStart > mEnd) { 
-            printf("Tick\n");
+            //printf("Tick\n");
             hStart += 1;
             flag = 1;
             goto reCompute;

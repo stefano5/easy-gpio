@@ -66,7 +66,7 @@ int subString(char *str, int start, int end) {
     if (end<0) end=len;
     if (start<0) start=0;
     if (end>len) {
-        if (debug()){
+        if (debug()) {
             printf("[%s->subString] Nothing to do. String %s have dim:%d, so the index %d (end index) doesn't exist\n", __FILE__, str, len, end, end);
         }
         return -1;
@@ -78,8 +78,8 @@ int subString(char *str, int start, int end) {
     char *str_temp = (char*)malloc(len);
     initArray_str(str_temp, len);
     int new_index=0;
-    for (int i=0; i<len; i++ ){
-        if(i>=start && i<end){
+    for (int i=0; i<len; i++ ) {
+        if(i>=start && i<end) {
             str_temp[new_index++]=str[i];
         }
     }

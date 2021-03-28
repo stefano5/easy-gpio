@@ -132,22 +132,27 @@ void analyze_command_argc2(int argc, char **argv){
         int pin = atoi(argv[2]);
         if (pin == 0){
             printf("Syntax error. Should be\t%s pwm pin f   where"
-                    " 'pwm' is a command, 'pin' is a number of the pin, 'f' is the normalized frequency (or duty cycle) whit value from 0 to 1\n", argv[0]); 
+                    " 'pwm' is a command, 'pin' is a number of the pin, 'f' is the normalized frequency (or duty cycle) with value from 0 to 1\n", argv[0]); 
             exit(EXIT_FAILURE); 
         }
 
-        
         float frequency = (float)atof(trim(argv[3])); //cosi non fa differenza tra passare '0' e passare 'ciao', si ottiene la stessa cosa
-        
+
         if (frequency == 0) {
-                send_message(pin, 0.0);
-                exit(EXIT_SUCCESS);
+            send_message(pin, 0.0);
+            exit(EXIT_SUCCESS);
         } else if (frequency == 1) {
-                send_message(pin, 1.0);
-                exit(EXIT_SUCCESS);
+            send_message(pin, 1.0);
+            exit(EXIT_SUCCESS);
         } else {
-                send_message(pin, frequency);        
-                exit(EXIT_SUCCESS);
+            if (pin<=0 || pin > 27 || frequency > 1 || frequency < 0) {
+                printf("Syntax error. Should be\t%s pwm pin f   where"
+                        " 'pwm' is a command, 'pin' is a number of the pin, 'f' is the normalized frequency (or duty cycle) with value from 0 to 1\n", argv[0]); 
+                exit(EXIT_FAILURE);
+            }
+
+            send_message(pin, frequency);        
+            exit(EXIT_SUCCESS);
         }
     }
 
@@ -181,7 +186,7 @@ int main(int argc, char **argv){
         printHelp(argv);
         exit(EXIT_SUCCESS);
     }
-    
+
     if (argc==2){
         analyze_command_argc1(argv);
     } else  { 

@@ -67,9 +67,13 @@ void initArray_int(int *array, int dim, int init_value) {
 void managementParam(int i);
 void managementCommand(int i);
 
-#define MAX_NUMBER_COMMAND      24
-#define MAX_NUMBER_PARAM        24
-#define MAX_DIM_P_C             64
+//#define MAX_NUMBER_COMMAND      24
+//#define MAX_NUMBER_PARAM        24
+//#define MAX_DIM_P_C             64
+
+#define MAX_NUMBER_COMMAND      2048
+#define MAX_NUMBER_PARAM        2048
+#define MAX_DIM_P_C             512
 
 /**
  * Questa funzione analizza i parametri inseritu su argv e li divide tra comandi e effettivi parametri
@@ -78,7 +82,7 @@ void managementCommand(int i);
  *  -d          è un comando
  *  file.c      è un parametro
  *
- *  La funzione sotto salerà nella variabile    'param' tutti i parametri riconosciuti
+ *  La funzione sotto salverà nella variabile   'param' tutti i parametri riconosciuti
  *                                              'command' tutti i comandi riconosciuti
  * 
  */
@@ -89,7 +93,8 @@ int countParam;
 char **__p;
 char name_exe[32];
 void analyzeArg(int argc, char **argv) { 
-    countCommand = countParam = 0;
+    countCommand = 0;
+    countParam = 0;
     if (argc > MAX_NUMBER_COMMAND + MAX_NUMBER_PARAM) {
         setColor(PRINT_RED);
         printf("[FATAL ERROR] (%s->analyzeArg()) Numero di argomenti troppo grande, bisogna modificare la dichiarazione delle variabili della funzione in questo errore mostrata. ", __FILE__);
@@ -145,5 +150,17 @@ float randomf() {
     return ((float)((rand()) % 10)) / (float)((rand() % 10) + 10.0);
 }
 
+
+void printWaiting(char *text, int timeToWait) {
+//text like:        "Waiting %d seconds, give me SIGINT if you want stop me.."
+        printf("\b");
+        for (int i=timeToWait; i>=0; i--) {
+            printf(text, i);
+            fflush(stdout);
+            sleep(1);
+            for (int j=0; j<strlen(text); j++) printf("\b");
+        }
+        printf("\n");
+}
 
 #endif

@@ -9,8 +9,12 @@
 
 
 int __debug=FALSE;
-int debug() { 
+int debug() {
+#ifdef _DEBUG_
+    return TRUE;
+#else
     return __debug;
+#endif
 }
 
 void printf_d(char *s) {
@@ -25,13 +29,13 @@ void printf_d(char *s) {
 void debug_on() {
 #ifdef _DEBUG_
     setColor(PRINT_CYAN);
-    printf("[MODALITA' DEBUG: FORCED ON]");
+    printf("[DEBUG MODE: FORCED ON]");
     resetColor();
     printf("\n");
     __debug=TRUE;
 #else
     setColor(PRINT_YELLOW);
-    printf("[MODALITA' DEBUG: ON]");
+    printf("[DEBUG MODE: ON]");
     resetColor();
     printf("\n");
     __debug=TRUE;
@@ -41,12 +45,12 @@ void debug_on() {
 void debug_off() {
 #ifdef _DEBUG_
     setColor(PRINT_CYAN);
-    printf("[MODALITA' DEBUG: IS FORCED ON] recompile without _DEBUG_ macro");
+    printf("[DEBUG MODE: IS FORCED ON] recompile without _DEBUG_ macro");
     resetColor();
     printf("\n");
 #else
     setColor(PRINT_YELLOW);
-    printf("[MODALITA' DEBUG: OFF]");
+    printf("[MODE DEBUG: OFF]");
     resetColor();
     printf("\n");
     __debug=FALSE;
