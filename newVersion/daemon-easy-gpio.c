@@ -15,35 +15,33 @@ typedef struct {
 
 struct {                            //22/3
     int pin;
-    int state;
-    float oldF;
-    float newF;
+    float old_duty_cycle;
+    float new_duty_cycle;
     pthread_t pinTid;
 } gpio_pwm[27];
 
 void init_gpio_pwm() {              //22/3
     for (int i=0; i < 27; i++) {
-        gpio_pwm[i].state = 0;
         gpio_pwm[i].pin = i+1;
-        gpio_pwm[i].oldF = gpio_pwm[i].newF = 0.0;
+        gpio_pwm[i].old_duty_cycle = gpio_pwm[i].new_duty_cycle = 0.0;
     }
 }
 
 void stop_pwm(int pin) {
     for (int i=1; i < 28; i++) {
         if (i == pin)
-            gpio_pwm[i].newF = 0.0;
+            gpio_pwm[i].new_duty_cycle = 0.0;
     }
 }
 
 void stop_all_pwm() {
     for (int i=1; i < 28; i++) {
-        gpio_pwm[i].newF = 0.0;
+        gpio_pwm[i].new_duty_cycle = 0.0;
     }
 }
 
 void update_pwm(float f, int pin) {
-    gpio_pwm[pin - 1].newF = f;
+    gpio_pwm[pin - 1].new_duty_cycle = f;
 }
 
 void *task_gpio_control(void *param) {
@@ -51,19 +49,18 @@ void *task_gpio_control(void *param) {
     float dutyCycle = 0.0;
     initializePin(pin, PIN_OUT);
 
-
     while (TRUE) {
-        if (gpio_pwm[pin-1].oldF != gpio_pwm[pin-1].newF) {
-            dutyCycle = gpio_pwm[pin-1].newF;
-            gpio_pwm[pin-1].oldF = dutyCycle;
+        if (gpio_pwm[pin - 1].old_duty_cycle != gpio_pwm[pin - 1].new_duty_cycle) {
+            dutyCycle = gpio_pwm[pin - 1].new_duty_cycle;
+            gpio_pwm[pin - 1].old_duty_cycle = dutyCycle;
 
             if (dutyCycle == 0.0 || dutyCycle == 1.0) {
                 write_pin(pin, (int)dutyCycle);
                 printf("write_pin. pin: [%d], value: [%d]\n", pin, (int)dutyCycle);
             } else {
-                gpio_pwm[pin-1].oldF = gpio_pwm[pin-1].newF;
+                gpio_pwm[pin - 1].old_duty_cycle = gpio_pwm[pin-1].new_duty_cycle;
                 printf("START PWM. pin: [%d], value: [%.2f]\n", pin ,dutyCycle);
-                while(gpio_pwm[pin-1].oldF == gpio_pwm[pin-1].newF) {
+                while(gpio_pwm[pin - 1].old_duty_cycle == gpio_pwm[pin - 1].new_duty_cycle) {
                     _create_pwm(dutyCycle * 100, pin);
                 }
             }
@@ -113,7 +110,9 @@ void stopExe(int sig) {
     printf("Signal recived\n");
     for (int i=1; i<28; i++)
         stop_pwm(i);
-    //turn_off_all_gpio_pwm();
+    usleep(10000);
+    for (PRECONDITION 27 POSTCONDITION)
+        pthread_cancel(gpio_pwm[i].pinTid);
     msgctl(msgid, IPC_RMID, 0);
     exit(EXIT_SUCCESS);
 }
